@@ -1,0 +1,1 @@
+docker exec -it docai-postgres psql -U postgres -d docai
