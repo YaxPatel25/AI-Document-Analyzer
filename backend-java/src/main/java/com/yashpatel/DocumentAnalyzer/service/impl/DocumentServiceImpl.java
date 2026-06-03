@@ -2,6 +2,7 @@ package com.yashpatel.DocumentAnalyzer.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import com.yashpatel.DocumentAnalyzer.repository.DocumentRepository;
+import com.yashpatel.DocumentAnalyzer.dto.DocumentResponse;
 import com.yashpatel.DocumentAnalyzer.dto.UploadResponse;
 import com.yashpatel.DocumentAnalyzer.entity.Document;
 import com.yashpatel.DocumentAnalyzer.service.DocumentService;
@@ -12,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -60,5 +62,20 @@ public UploadResponse uploadDocument(MultipartFile file) {
     } catch (Exception e) {
         throw new RuntimeException("File upload failed", e);
     }
+}
+
+@Override
+public List<DocumentResponse> getAllDocuments() {
+
+    return documentRepository.findAll()
+            .stream()
+            .map(document -> new DocumentResponse(
+                    document.getId(),
+                    document.getOriginalFileName(),
+                    document.getContentType(),
+                    document.getFileSize(),
+                    document.getUploadedAt()
+            ))
+            .toList();
 }
 }

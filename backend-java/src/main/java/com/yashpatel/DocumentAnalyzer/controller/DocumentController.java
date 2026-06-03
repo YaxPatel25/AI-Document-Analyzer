@@ -3,6 +3,10 @@ package com.yashpatel.DocumentAnalyzer.controller;
 import com.yashpatel.DocumentAnalyzer.dto.UploadResponse;
 import com.yashpatel.DocumentAnalyzer.service.DocumentService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import com.yashpatel.DocumentAnalyzer.dto.DocumentResponse;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,5 +28,13 @@ public class DocumentController {
                 documentService.uploadDocument(file);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<DocumentResponse>> getAllDocuments() {
+
+        return ResponseEntity.ok(
+                documentService.getAllDocuments()
+        );
     }
 }
