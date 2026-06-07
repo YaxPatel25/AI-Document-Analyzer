@@ -4,6 +4,7 @@ function App() {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
   const [documents, setDocuments] = useState([]);
+  const [selectedDocument, setSelectedDocument] = useState(null);
 
   const uploadFile = async () => {
     if (!file) {
@@ -50,6 +51,17 @@ function App() {
     loadDocuments();
   }, []);
 
+  const viewDocument = async (id) => {
+
+  const response = await fetch(
+    `http://localhost:8080/api/documents/${id}`
+  );
+
+  const data = await response.json();
+
+  setSelectedDocument(data);
+  };
+
   return (
     <div style={{ padding: "30px" }}>
       <h1>AI Document Analyzer</h1>
@@ -80,6 +92,8 @@ function App() {
                 <th>Size</th>
                 <th>Type</th>
                 <th>Uploaded At</th>
+                <th>View Text</th>
+                <th>Download</th>
               </tr>
             </thead>
 
@@ -90,10 +104,42 @@ function App() {
                   <td>{doc.fileSize}</td>
                   <td>{doc.contentType}</td>
                   <td>{doc.uploadedAt}</td>
+                  <td>
+                    <button
+                      onClick={() => viewDocument(doc.id)}
+                    >
+                      View Text
+                    </button>
+                  </td>
+                  <td>
+                  <button
+                    onClick={() =>
+                      window.open(
+                        `http://localhost:8080/api/documents/${doc.id}/download`,
+                      )
+                    }
+                  >
+                    Download
+                  </button>
+                </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {selectedDocument && (
+          <div style={{ marginTop: "30px" }}>
+            <h2>
+              {selectedDocument.originalFileName}
+            </h2>
+
+            <textarea
+              rows="20"
+              cols="100"
+              value={selectedDocument.extractedText}
+              readOnly
+            />
+          </div>
+        )}
         </div>
       )}
     </div>

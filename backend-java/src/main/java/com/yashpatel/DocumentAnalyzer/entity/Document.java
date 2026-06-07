@@ -28,4 +28,7 @@ public class Document {
     private String contentType;
 
     private LocalDateTime uploadedAt;
+
+    @Column(columnDefinition = "TEXT")
+    private String extractedText;
 }
