@@ -131,4 +131,17 @@ public class DocumentServiceImpl implements DocumentService {
                                 document.getOriginalFileName(),
                                 document.getExtractedText());
         }
+
+        @Override
+        public DocumentDetailResponse getSummarizedDocumentById(UUID id) {
+
+                Document document = documentRepository
+                                .findById(id)
+                                .orElseThrow(() -> new RuntimeException("Document not found"));
+
+                return new DocumentDetailResponse(
+                                document.getId(),
+                                document.getOriginalFileName(),
+                                document.getAiAnalysis());
+        }
 }

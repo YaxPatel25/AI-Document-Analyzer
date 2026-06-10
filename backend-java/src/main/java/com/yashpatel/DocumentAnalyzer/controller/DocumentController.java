@@ -62,4 +62,12 @@ public class DocumentController {
                 return ResponseEntity.ok(
                                 documentService.getDocumentById(id));
         }
+
+        @GetMapping("/summarize/{id}")
+        public ResponseEntity<DocumentDetailResponse> getSummarizedDocument(
+                        @PathVariable UUID id) {
+
+                return ResponseEntity.ok(
+                                documentService.getSummarizedDocumentById(id));
+        }
 }

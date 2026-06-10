@@ -62,6 +62,17 @@ function App() {
   setSelectedDocument(data);
   };
 
+  const summarizedText = async (id) => {
+
+  const response = await fetch(
+    `http://localhost:8080/api/documents/summarize/${id}`
+  );
+
+  const data = await response.json();
+
+  setSelectedDocument(data);
+  };
+
   return (
     <div style={{ padding: "30px" }}>
       <h1>AI Document Analyzer</h1>
@@ -93,6 +104,7 @@ function App() {
                 <th>Type</th>
                 <th>Uploaded At</th>
                 <th>View Text</th>
+                <th>Summarized Text</th>
                 <th>Download</th>
               </tr>
             </thead>
@@ -109,6 +121,13 @@ function App() {
                       onClick={() => viewDocument(doc.id)}
                     >
                       View Text
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => summarizedText(doc.id)}
+                    >
+                      Summarized Text
                     </button>
                   </td>
                   <td>

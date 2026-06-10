@@ -20,4 +20,6 @@ public interface DocumentService {
     Resource downloadDocument(UUID documentId);
 
     DocumentDetailResponse getDocumentById(UUID id);
+
+    DocumentDetailResponse getSummarizedDocumentById(UUID id);
 }
