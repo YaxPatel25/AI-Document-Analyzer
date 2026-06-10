@@ -66,6 +66,7 @@ public class DocumentServiceImpl implements DocumentService {
                                         .contentType(file.getContentType())
                                         .uploadedAt(LocalDateTime.now())
                                         .extractedText(extractedText)
+                                        .aiAnalysis(summary)
                                         .build();
 
                         document = documentRepository.save(document);

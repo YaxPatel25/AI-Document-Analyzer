@@ -7,6 +7,7 @@ import com.yashpatel.DocumentAnalyzer.service.AIService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
@@ -20,32 +21,37 @@ public class GroqService implements AIService {
 
     @Override
     public String summarize(String text) {
+        try {
+            String prompt = """
+                    Summarize this text in few lines:
 
-        String prompt = """
-                Summarize the following document in 5 bullet points:
+                    %s
+                    """.formatted(text);
 
-                %s
-                """.formatted(text);
+            GroqRequest request = new GroqRequest(
+                    groqConfig.getModel(),
+                    List.of(
+                            new GroqRequest.Message(
+                                    "user",
+                                    prompt)));
 
-        GroqRequest request = new GroqRequest(
-                groqConfig.getModel(),
-                List.of(
-                        new GroqRequest.Message(
-                                "user",
-                                prompt)));
+            GroqResponse response = restClient.post()
+                    .uri("https://api.groq.com/openai/v1/chat/completions")
+                    .header(
+                            HttpHeaders.AUTHORIZATION,
+                            "Bearer " + groqConfig.getApiKey())
+                    .body(request)
+                    .retrieve()
+                    .body(GroqResponse.class);
 
-        GroqResponse response = restClient.post()
-                .uri("https://api.groq.com/openai/v1/chat/completions")
-                .header(
-                        HttpHeaders.AUTHORIZATION,
-                        "Bearer " + groqConfig.getApiKey())
-                .body(request)
-                .retrieve()
-                .body(GroqResponse.class);
-
-        return response.choices()
-                .getFirst()
-                .message()
-                .content();
+            return response.choices()
+                    .getFirst()
+                    .message()
+                    .content();
+        } catch (HttpClientErrorException.TooManyRequests e) {
+            throw new RuntimeException("Groq API quota exceeded. Please try again later.");
+        } catch (Exception e) {
+            throw new RuntimeException("AI summarization failed: " + e.getMessage());
+        }
     }
 }
