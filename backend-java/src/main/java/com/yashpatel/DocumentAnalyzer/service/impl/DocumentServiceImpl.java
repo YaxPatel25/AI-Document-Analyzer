@@ -6,8 +6,10 @@ import com.yashpatel.DocumentAnalyzer.dto.DocumentDetailResponse;
 import com.yashpatel.DocumentAnalyzer.dto.DocumentResponse;
 import com.yashpatel.DocumentAnalyzer.dto.UploadResponse;
 import com.yashpatel.DocumentAnalyzer.entity.Document;
+import com.yashpatel.DocumentAnalyzer.entity.DocumentStatus;
 import com.yashpatel.DocumentAnalyzer.service.AIService;
 import com.yashpatel.DocumentAnalyzer.service.DocumentService;
+import com.yashpatel.DocumentAnalyzer.util.DocxExtractor;
 import com.yashpatel.DocumentAnalyzer.util.PdfExtractor;
 
 import org.springframework.stereotype.Service;
@@ -34,6 +36,20 @@ public class DocumentServiceImpl implements DocumentService {
         @Override
         public UploadResponse uploadDocument(MultipartFile file) {
 
+                // Validate file type first
+                String contentType = file.getContentType();
+
+                if (contentType == null ||
+                                !List.of(
+                                                "application/pdf",
+                                                "text/plain",
+                                                "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                                                .contains(contentType)) {
+
+                        return new UploadResponse(
+                                        null,
+                                        "Invalid file type. Only PDF, TXT, and DOCX are allowed.");
+                }
                 try {
 
                         String originalFileName = file.getOriginalFilename();
@@ -50,23 +66,24 @@ public class DocumentServiceImpl implements DocumentService {
 
                         String extractedText = "";
 
-                        if ("application/pdf".equals(file.getContentType())) {
-                                extractedText = PdfExtractor.extractText(
-                                                filePath.toFile());
+                        if ("application/pdf".equals(contentType)) {
+                                extractedText = PdfExtractor.extractText(filePath.toFile());
+                        } else if ("text/plain".equals(contentType)) {
+                                extractedText = Files.readString(filePath);
+                        } else if ("application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                        .equals(contentType)) {
+                                // docx extraction — needs apache poi dependency
+                                extractedText = DocxExtractor.extractText(filePath.toFile());
                         }
-
-                        String summary = aiService.summarize(extractedText);
-
-                        System.out.println(summary);
 
                         Document document = Document.builder()
                                         .originalFileName(originalFileName)
                                         .storedFileName(storedFileName)
                                         .fileSize(file.getSize())
-                                        .contentType(file.getContentType())
+                                        .contentType(contentType)
                                         .uploadedAt(LocalDateTime.now())
                                         .extractedText(extractedText)
-                                        .aiAnalysis(summary)
+                                        .status(DocumentStatus.UPLOADED)
                                         .build();
 
                         document = documentRepository.save(document);
@@ -90,7 +107,8 @@ public class DocumentServiceImpl implements DocumentService {
                                                 document.getOriginalFileName(),
                                                 document.getContentType(),
                                                 document.getFileSize(),
-                                                document.getUploadedAt()))
+                                                document.getUploadedAt(),
+                                                document.getStatus()))
                                 .toList();
         }
 
@@ -139,9 +157,50 @@ public class DocumentServiceImpl implements DocumentService {
                                 .findById(id)
                                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
-                return new DocumentDetailResponse(
-                                document.getId(),
-                                document.getOriginalFileName(),
-                                document.getAiAnalysis());
+                // If summary already exists, return it (don't call AI again)
+                if (document.getAiAnalysis() != null && !document.getAiAnalysis().isBlank()) {
+                        return new DocumentDetailResponse(
+                                        document.getId(),
+                                        document.getOriginalFileName(),
+                                        document.getAiAnalysis());
+                }
+
+                // Validate file size only if AIService is GroqService
+                if (aiService instanceof GroqService groqService) {
+                        String validationError = groqService.validateFileSize(document.getFileSize());
+                        if (validationError != null) {
+                                return new DocumentDetailResponse(
+                                                document.getId(),
+                                                document.getOriginalFileName(),
+                                                validationError); // show error as summary text in UI
+                        }
+                }
+
+                try {
+
+                        document.setStatus(DocumentStatus.PROCESSING);
+                        documentRepository.save(document);
+
+                        // Call AI only when summary is requested for the first time
+                        String summary = aiService.summarize(document.getExtractedText());
+
+                        // Save summary so next time AI is not called again
+                        document.setAiAnalysis(summary);
+                        document.setStatus(DocumentStatus.COMPLETED);
+
+                        documentRepository.save(document);
+
+                        return new DocumentDetailResponse(
+                                        document.getId(),
+                                        document.getOriginalFileName(),
+                                        summary);
+
+                } catch (Exception e) {
+
+                        document.setStatus(DocumentStatus.FAILED);
+                        documentRepository.save(document);
+
+                        throw e;
+                }
         }
 }

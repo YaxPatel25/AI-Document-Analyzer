@@ -25,10 +25,13 @@ function App() {
       );
 
       const data = await response.json();
-
-      setMessage(JSON.stringify(data, null, 2));
-
-      await loadDocuments();
+      console.log("Response:", data);
+      if (data.documentId === null) {
+        setMessage("❌ " + data.message);  // invalid file type
+      } else {
+        setMessage("✅ " + data.message);  // success
+        await loadDocuments();             // refresh list only on success
+      }
     } catch (error) {
       console.error(error);
       setMessage("Upload failed");
@@ -53,16 +56,24 @@ function App() {
 
   const viewDocument = async (id) => {
 
-  const response = await fetch(
-    `http://localhost:8080/api/documents/${id}`
-  );
+    const response = await fetch(
+      `http://localhost:8080/api/documents/${id}`
+    );
 
-  const data = await response.json();
+    const data = await response.json();
 
-  setSelectedDocument(data);
+    setSelectedDocument(data);
   };
-
   const summarizedText = async (id) => {
+
+  // immediately show PROCESSING in UI
+  setDocuments(prev =>
+    prev.map(doc =>
+      doc.id === id
+        ? { ...doc, status: "PROCESSING" }
+        : doc
+    )
+  );
 
   const response = await fetch(
     `http://localhost:8080/api/documents/summarize/${id}`
@@ -71,7 +82,9 @@ function App() {
   const data = await response.json();
 
   setSelectedDocument(data);
-  };
+
+  await loadDocuments();
+};
 
   return (
     <div style={{ padding: "30px" }}>
@@ -106,6 +119,7 @@ function App() {
                 <th>View Text</th>
                 <th>Summarized Text</th>
                 <th>Download</th>
+                <th>Status</th>
               </tr>
             </thead>
 
@@ -131,34 +145,35 @@ function App() {
                     </button>
                   </td>
                   <td>
-                  <button
-                    onClick={() =>
-                      window.open(
-                        `http://localhost:8080/api/documents/${doc.id}/download`,
-                      )
-                    }
-                  >
-                    Download
-                  </button>
-                </td>
+                    <button
+                      onClick={() =>
+                        window.open(
+                          `http://localhost:8080/api/documents/${doc.id}/download`,
+                        )
+                      }
+                    >
+                      Download
+                    </button>
+                  </td>
+                  <td>{doc.status}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           {selectedDocument && (
-          <div style={{ marginTop: "30px" }}>
-            <h2>
-              {selectedDocument.originalFileName}
-            </h2>
+            <div style={{ marginTop: "30px" }}>
+              <h2>
+                {selectedDocument.originalFileName}
+              </h2>
 
-            <textarea
-              rows="20"
-              cols="100"
-              value={selectedDocument.extractedText}
-              readOnly
-            />
-          </div>
-        )}
+              <textarea
+                rows="20"
+                cols="100"
+                value={selectedDocument.extractedText}
+                readOnly
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

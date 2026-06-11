@@ -1,15 +1,20 @@
 package com.yashpatel.DocumentAnalyzer.dto.groq;
 
+import lombok.Data;
 import java.util.List;
 
-public record GroqResponse(
-        List<Choice> choices) {
+@Data
+public class GroqResponse {
 
-    public record Choice(
-            Message message) {
+    private List<Choice> choices;
+
+    @Data
+    public static class Choice {
+        private Message message;
     }
 
-    public record Message(
-            String content) {
+    @Data
+    public static class Message {
+        private String content;
     }
 }

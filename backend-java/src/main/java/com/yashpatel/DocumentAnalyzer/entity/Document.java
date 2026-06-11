@@ -34,4 +34,7 @@ public class Document {
 
     @Column(columnDefinition = "TEXT")
     private String aiAnalysis;
+
+    @Enumerated(EnumType.STRING)
+    private DocumentStatus status;
 }
