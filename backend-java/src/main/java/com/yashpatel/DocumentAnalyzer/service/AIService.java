@@ -1,7 +1,7 @@
 package com.yashpatel.DocumentAnalyzer.service;
 
+import com.yashpatel.DocumentAnalyzer.dto.AIResponse;
+
 public interface AIService {
-
-    String summarize(String text);
-
+    AIResponse summarize(String text);
 }

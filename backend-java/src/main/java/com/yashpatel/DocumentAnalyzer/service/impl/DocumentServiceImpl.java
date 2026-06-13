@@ -2,6 +2,7 @@ package com.yashpatel.DocumentAnalyzer.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import com.yashpatel.DocumentAnalyzer.repository.DocumentRepository;
+import com.yashpatel.DocumentAnalyzer.dto.AIResponse;
 import com.yashpatel.DocumentAnalyzer.dto.DocumentDetailResponse;
 import com.yashpatel.DocumentAnalyzer.dto.DocumentResponse;
 import com.yashpatel.DocumentAnalyzer.dto.UploadResponse;
@@ -182,10 +183,19 @@ public class DocumentServiceImpl implements DocumentService {
                         documentRepository.save(document);
 
                         // Call AI only when summary is requested for the first time
-                        String summary = aiService.summarize(document.getExtractedText());
+                        AIResponse aiResponse = aiService.summarize(document.getExtractedText());
 
-                        // Save summary so next time AI is not called again
-                        document.setAiAnalysis(summary);
+                        document.setAiAnalysis(
+                                        aiResponse.summary());
+
+                        document.setPromptTokens(
+                                        aiResponse.promptTokens());
+
+                        document.setCompletionTokens(
+                                        aiResponse.completionTokens());
+
+                        document.setTotalTokens(
+                                        aiResponse.totalTokens());
                         document.setStatus(DocumentStatus.COMPLETED);
 
                         documentRepository.save(document);
@@ -193,7 +203,7 @@ public class DocumentServiceImpl implements DocumentService {
                         return new DocumentDetailResponse(
                                         document.getId(),
                                         document.getOriginalFileName(),
-                                        summary);
+                                        aiResponse.summary());
 
                 } catch (Exception e) {
 

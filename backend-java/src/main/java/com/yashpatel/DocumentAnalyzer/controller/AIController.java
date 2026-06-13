@@ -1,5 +1,6 @@
 package com.yashpatel.DocumentAnalyzer.controller;
 
+import com.yashpatel.DocumentAnalyzer.dto.AIResponse;
 import com.yashpatel.DocumentAnalyzer.service.AIService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +13,7 @@ public class AIController {
     private final AIService aiService;
 
     @GetMapping("/test-ai")
-    public String test() {
+    public AIResponse test() {
 
         return aiService.summarize("""
                 Java is a programming language.

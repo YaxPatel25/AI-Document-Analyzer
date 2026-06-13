@@ -1,6 +1,7 @@
 package com.yashpatel.DocumentAnalyzer.service.impl;
 
 import com.yashpatel.DocumentAnalyzer.config.GroqConfig;
+import com.yashpatel.DocumentAnalyzer.dto.AIResponse;
 import com.yashpatel.DocumentAnalyzer.dto.groq.GroqRequest;
 import com.yashpatel.DocumentAnalyzer.dto.groq.GroqResponse;
 import com.yashpatel.DocumentAnalyzer.service.AIService;
@@ -25,17 +26,27 @@ public class GroqService implements AIService {
     private static final long MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024; // 20MB
 
     @Override
-    public String summarize(String text) {
+    public AIResponse summarize(String text) {
         try {
             // Check text size
             if (text == null || text.isBlank()) {
-                return "No extractable text found in this document.";
+                return new AIResponse(
+                        "No extractable text found in this document.",
+                        0,
+                        0,
+                        0);
             }
 
             if (text.length() > MAX_INPUT_CHARACTERS) {
-                return "Document text is too large to summarize. Maximum allowed size is "
-                        + MAX_INPUT_CHARACTERS + " characters. Your document has "
-                        + text.length() + " characters. Please upload a smaller document.";
+                return new AIResponse(
+                        "Document text is too large to summarize. Maximum allowed size is "
+                                + MAX_INPUT_CHARACTERS
+                                + " characters. Your document has "
+                                + text.length()
+                                + " characters.",
+                        0,
+                        0,
+                        0);
             }
             String prompt = """
                     Summarize this text in few lines:
@@ -62,10 +73,15 @@ public class GroqService implements AIService {
                     .body(GroqResponse.class);
             System.out.println("API Response: " + response.getUsage());
 
-            return response.getChoices()
-                    .get(0)
-                    .getMessage()
-                    .getContent();
+            return new AIResponse(
+                    response.getChoices()
+                            .getFirst()
+                            .getMessage()
+                            .getContent(),
+
+                    response.getUsage().getPrompt_tokens(),
+                    response.getUsage().getCompletion_tokens(),
+                    response.getUsage().getTotal_tokens());
         } catch (HttpClientErrorException.TooManyRequests e) {
             throw new RuntimeException("Groq API quota exceeded. Please try again later.");
         } catch (Exception e) {
