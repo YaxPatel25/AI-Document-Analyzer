@@ -1,6 +1,7 @@
 docker exec -it docai-postgres psql -U postgres -d docai
 
 Concepts:
+Servlet
 JPA Entity
 Hibernate ORM
 Repository Pattern

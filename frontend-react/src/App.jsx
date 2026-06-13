@@ -25,7 +25,7 @@ function App() {
       );
 
       const data = await response.json();
-      console.log("Response:", data);
+      
       if (data.documentId === null) {
         setMessage("❌ " + data.message);  // invalid file type
       } else {

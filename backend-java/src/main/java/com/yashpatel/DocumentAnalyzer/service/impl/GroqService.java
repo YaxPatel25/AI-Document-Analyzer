@@ -60,6 +60,7 @@ public class GroqService implements AIService {
                     .body(request)
                     .retrieve()
                     .body(GroqResponse.class);
+            System.out.println("API Response: " + response.getUsage());
 
             return response.getChoices()
                     .get(0)

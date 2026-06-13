@@ -37,4 +37,10 @@ public class Document {
 
     @Enumerated(EnumType.STRING)
     private DocumentStatus status;
+
+    private Integer promptTokens;
+
+    private Integer completionTokens;
+
+    private Integer totalTokens;
 }
