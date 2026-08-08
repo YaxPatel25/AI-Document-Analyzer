@@ -120,6 +120,7 @@ function App() {
                 <th>Summarized Text</th>
                 <th>Download</th>
                 <th>Status</th>
+                <th>Error</th>
               </tr>
             </thead>
 
@@ -156,6 +157,7 @@ function App() {
                     </button>
                   </td>
                   <td>{doc.status}</td>
+                  <td>{doc.errorMessage}</td>
                 </tr>
               ))}
             </tbody>

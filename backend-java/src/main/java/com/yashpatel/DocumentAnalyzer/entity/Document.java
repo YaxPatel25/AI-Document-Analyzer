@@ -43,4 +43,7 @@ public class Document {
     private Integer completionTokens;
 
     private Integer totalTokens;
+
+    @Column(columnDefinition = "TEXT")
+    private String errorMessage;
 }

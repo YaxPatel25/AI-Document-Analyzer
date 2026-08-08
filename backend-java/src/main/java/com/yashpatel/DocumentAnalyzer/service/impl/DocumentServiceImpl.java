@@ -109,7 +109,8 @@ public class DocumentServiceImpl implements DocumentService {
                                                 document.getContentType(),
                                                 document.getFileSize(),
                                                 document.getUploadedAt(),
-                                                document.getStatus()))
+                                                document.getStatus(),
+                                                document.getErrorMessage()))
                                 .toList();
         }
 
@@ -170,6 +171,11 @@ public class DocumentServiceImpl implements DocumentService {
                 if (aiService instanceof GroqService groqService) {
                         String validationError = groqService.validateFileSize(document.getFileSize());
                         if (validationError != null) {
+                                document.setStatus(DocumentStatus.FAILED);
+                                document.setErrorMessage(validationError);
+
+                                documentRepository.save(document);
+
                                 return new DocumentDetailResponse(
                                                 document.getId(),
                                                 document.getOriginalFileName(),
@@ -197,6 +203,7 @@ public class DocumentServiceImpl implements DocumentService {
                         document.setTotalTokens(
                                         aiResponse.totalTokens());
                         document.setStatus(DocumentStatus.COMPLETED);
+                        document.setErrorMessage(null);
 
                         documentRepository.save(document);
 
@@ -208,9 +215,12 @@ public class DocumentServiceImpl implements DocumentService {
                 } catch (Exception e) {
 
                         document.setStatus(DocumentStatus.FAILED);
+                        document.setErrorMessage(e.getMessage());
                         documentRepository.save(document);
 
-                        throw e;
+                        throw new RuntimeException(
+                                        "AI summarization failed",
+                                        e);
                 }
         }
 }
