@@ -2,7 +2,7 @@ spring:
   application:
     name: DocumentAnalyzer
   datasource:
-    url: jdbc:postgresql://localhost:5433/docai?options=-c%20timezone=Asia/Kolkata
+    url: jdbc:postgresql://localhost:5433/docai
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -11,3 +11,5 @@ spring:
       ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  profiles:
+    active: local

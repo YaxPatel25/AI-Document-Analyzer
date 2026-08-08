@@ -3,6 +3,10 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+backend-java/storage/*.pdf
+
+### application.yml ###
+/src/main/resources/application-local.yml
 
 ### STS ###
 .apt_generated

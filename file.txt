@@ -1,0 +1,10 @@
+docker exec -it docai-postgres psql -U postgres -d docai
+
+Concepts:
+Servlet
+JPA Entity
+Hibernate ORM
+Repository Pattern
+Dependency Injection
+Saving objects to PostgreSQL
+UUID primary keys
