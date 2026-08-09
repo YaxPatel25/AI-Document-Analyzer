@@ -36,11 +36,17 @@ steps:
   - task: UseNode@1
     displayName: 'Set up Node.js'
     inputs:
-      versionSpec: '22.x'
+      versionSpec: '24.x'
 
   - script: |
+      echo "Node version:"
       node --version
+
+      echo "npm version:"
       npm --version
+
+      echo "npm prefix:"
+      npm config get prefix
     workingDirectory: frontend-react
     displayName: 'Verify Node.js and npm'
 
