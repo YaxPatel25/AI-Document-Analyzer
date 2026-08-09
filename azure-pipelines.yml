@@ -36,19 +36,18 @@ steps:
   - task: UseNode@1
     displayName: 'Set up Node.js'
     inputs:
-      versionSpec: '24.x'
+      version: '24.x'
 
   - script: |
-      echo "Node version:"
       node --version
-
-      echo "npm version:"
       npm --version
-
-      echo "npm prefix:"
-      npm config get prefix
     workingDirectory: frontend-react
-    displayName: 'Verify Node.js and npm'
+    displayName: 'Verify Node.js'
+
+  - script: |
+      npm install -g npm@10.8.1
+      npm --version
+    displayName: 'Set up npm 10.8.1'
 
   - script: |
       npm ci
