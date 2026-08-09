@@ -1,0 +1,55 @@
+trigger:
+  - Backend
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+  # =========================
+  # Backend - Java / Spring Boot
+  # =========================
+
+  - task: JavaToolInstaller@0
+    displayName: 'Set up Java 21'
+    inputs:
+      versionSpec: '21'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+
+  - script: |
+      java -version
+      mvn -version
+    workingDirectory: backend-java
+    displayName: 'Verify Java and Maven'
+
+  - script: |
+      mvn clean package -DskipTests
+    workingDirectory: backend-java
+    displayName: 'Build Spring Boot Backend'
+
+
+  # =========================
+  # Frontend - React / Vite
+  # =========================
+
+  - task: NodeTool@0
+    displayName: 'Set up Node.js'
+    inputs:
+      versionSpec: '22.x'
+
+  - script: |
+      node --version
+      npm --version
+    workingDirectory: frontend-react
+    displayName: 'Verify Node.js and npm'
+
+  - script: |
+      npm ci
+    workingDirectory: frontend-react
+    displayName: 'Install React dependencies'
+
+  - script: |
+      npm run build
+    workingDirectory: frontend-react
+    displayName: 'Build React application'
