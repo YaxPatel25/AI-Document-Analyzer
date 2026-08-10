@@ -17,7 +17,7 @@ public class AIController {
 
         return aiService.summarize("""
                 Java is a programming language.
-                Spring Boot is used for backend development.
+                Spring Boot is used for back-end development.
                 PostgreSQL is a relational database.
                 React is used for frontend applications.
                 Docker helps package applications.
