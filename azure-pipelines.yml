@@ -24,9 +24,23 @@ steps:
     displayName: 'Verify Java and Maven'
 
   - script: |
-      mvn clean package -DskipTests
+      mvn clean test
     workingDirectory: backend-java
-    displayName: 'Build Spring Boot Backend'
+    displayName: 'Run Backend Tests'
+
+  - script: |
+      mvn package -DskipTests
+    workingDirectory: backend-java
+    displayName: 'Package Spring Boot Backend'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish JUnit Test Results'
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: 'backend-java/target/surefire-reports/TEST-*.xml'
+      failTaskOnFailedTests: true
+      testRunTitle: 'Backend JUnit Tests'
 
 
   # =========================
