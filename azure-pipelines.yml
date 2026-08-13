@@ -72,3 +72,32 @@ steps:
       npm run build
     workingDirectory: frontend-react
     displayName: 'Build React application'
+
+
+  # =========================
+  # Push Docker Images to ACR
+  # =========================
+
+  - task: Docker@2
+    displayName: 'Push Backend Image to ACR'
+    inputs:
+      command: 'buildAndPush'
+      containerRegistry: 'docai-acr-connection'
+      repository: 'document-analyzer-backend'
+      dockerfile: 'backend-java/Dockerfile'
+      buildContext: 'backend-java'
+      tags: |
+        $(Build.BuildId)
+        latest
+
+  - task: Docker@2
+    displayName: 'Push Frontend Image to ACR'
+    inputs:
+      command: 'buildAndPush'
+      containerRegistry: 'docai-acr-connection'
+      repository: 'document-analyzer-frontend'
+      dockerfile: 'frontend-react/Dockerfile'
+      buildContext: 'frontend-react'
+      tags: |
+        $(Build.BuildId)
+        latest  
