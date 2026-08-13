@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
   const [file, setFile] = useState(null);
@@ -17,7 +18,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/documents/upload",
+        `${API_URL}/api/documents/upload`,
         {
           method: "POST",
           body: formData,
@@ -40,7 +41,7 @@ function App() {
 
   const loadDocuments = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/documents");
+      const response = await fetch(`${API_URL}/api/documents`);
 
       const data = await response.json();
 
@@ -57,7 +58,7 @@ function App() {
   const viewDocument = async (id) => {
 
     const response = await fetch(
-      `http://localhost:8080/api/documents/${id}`
+      `${API_URL}/api/documents/${id}`
     );
 
     const data = await response.json();
@@ -76,7 +77,7 @@ function App() {
   );
 
   const response = await fetch(
-    `http://localhost:8080/api/documents/summarize/${id}`
+    `${API_URL}/api/documents/summarize/${id}`
   );
 
   const data = await response.json();
@@ -149,7 +150,7 @@ function App() {
                     <button
                       onClick={() =>
                         window.open(
-                          `http://localhost:8080/api/documents/${doc.id}/download`,
+                          `${API_URL}/api/documents/${doc.id}/download`,
                         )
                       }
                     >
