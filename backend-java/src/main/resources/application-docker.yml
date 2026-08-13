@@ -3,7 +3,9 @@ spring:
     name: DocumentAnalyzer
 
   datasource:
-    url: jdbc:postgresql://docai-postgres:5432/docai
+#    for local DB
+#    url: jdbc:postgresql://docai-postgres:5432/docai
+    url: jdbc:postgresql://docai-postgres-2503.postgres.database.azure.com:5432/docai?sslmode=require
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
