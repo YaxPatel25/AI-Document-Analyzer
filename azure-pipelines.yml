@@ -101,3 +101,15 @@ steps:
       tags: |
         $(Build.BuildId)
         latest  
+
+  # =========================
+  # CD - Deploy Backend
+  # =========================
+
+  - task: AzureContainerApps@1
+    displayName: 'Deploy Backend to Azure Container App'
+    inputs:
+      azureSubscription: 'docai-azure-connection'
+      containerAppName: 'document-analyzer-backend'
+      resourceGroup: 'document-analyzer-rg'
+      imageToDeploy: 'docaiacr2503.azurecr.io/document-analyzer-backend:$(Build.BuildId)'
