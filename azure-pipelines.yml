@@ -113,3 +113,15 @@ steps:
       containerAppName: 'document-analyzer-backend'
       resourceGroup: 'document-analyzer-rg'
       imageToDeploy: 'docaiacr2503.azurecr.io/document-analyzer-backend:$(Build.BuildId)'
+
+  # =========================
+  # CD - Deploy Frontend
+  # =========================
+
+  - task: AzureContainerApps@1
+    displayName: 'Deploy Frontend to Azure Container App'
+    inputs:
+      azureSubscription: 'docai-azure-connection'
+      containerAppName: 'document-analyzer-frontend'
+      resourceGroup: 'document-analyzer-rg'
+      imageToDeploy: 'docaiacr2503.azurecr.io/document-analyzer-frontend:$(Build.BuildId)'
