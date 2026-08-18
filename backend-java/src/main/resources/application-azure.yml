@@ -3,7 +3,7 @@ spring:
     name: DocumentAnalyzer
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/docai
+    url: jdbc:postgresql://docai-postgres-2503.postgres.database.azure.com:5432/docai?sslmode=require
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -13,3 +13,6 @@ spring:
       ddl-auto: update
     show-sql: true
 
+groq:
+  api-key: ${GROQ_API_KEY}
+  model: ${GROQ_MODEL:llama-3.3-70b-versatile}

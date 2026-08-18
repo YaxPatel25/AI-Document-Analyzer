@@ -1,0 +1,33 @@
+docker stop document-analyzer-backend document-analyzer-frontend docai-postgres
+
+docker rm document-analyzer-backend document-analyzer-frontend docai-postgres
+
+docker run -d ^
+  --name docai-postgres ^
+  --network document-analyzer-network ^
+  -p 5433:5432 ^
+  -e POSTGRES_DB=docai ^
+  -e POSTGRES_USER=postgres ^
+  -e POSTGRES_PASSWORD=postgres ^
+  postgres:16
+
+docker run -d ^
+  --name document-analyzer-backend ^
+  --network document-analyzer-network ^
+  -p 8080:8080 ^
+  -e SPRING_PROFILES_ACTIVE=docker ^
+  -e GROQ_API_KEY= ^
+  document-analyzer-backend:1.0
+
+docker run -d ^
+  --name document-analyzer-frontend ^
+  --network document-analyzer-network ^
+  -p 8081:80 ^
+  document-analyzer-frontend:1.0
+
+docker ps
+
+docker network inspect document-analyzer-network
+
+
+docker exec -it docai-postgres psql -U postgres -d docai

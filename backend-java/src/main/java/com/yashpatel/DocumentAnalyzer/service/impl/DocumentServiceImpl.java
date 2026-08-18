@@ -10,6 +10,7 @@ import com.yashpatel.DocumentAnalyzer.entity.Document;
 import com.yashpatel.DocumentAnalyzer.entity.DocumentStatus;
 import com.yashpatel.DocumentAnalyzer.service.AIService;
 import com.yashpatel.DocumentAnalyzer.service.DocumentService;
+import com.yashpatel.DocumentAnalyzer.service.DocumentChunkService;
 import com.yashpatel.DocumentAnalyzer.util.DocxExtractor;
 import com.yashpatel.DocumentAnalyzer.util.PdfExtractor;
 
@@ -33,6 +34,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         private final DocumentRepository documentRepository;
         private final AIService aiService;
+        private final DocumentChunkService documentChunkService;
 
         @Override
         public UploadResponse uploadDocument(MultipartFile file) {
@@ -88,6 +90,11 @@ public class DocumentServiceImpl implements DocumentService {
                                         .build();
 
                         document = documentRepository.save(document);
+
+                        documentChunkService.createChunks(
+                                document.getId(),
+                                extractedText
+                        );
 
                         return new UploadResponse(
                                         document.getId(),
