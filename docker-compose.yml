@@ -2,24 +2,34 @@ services:
   postgres:
     image: postgres:16
     container_name: docai-postgres
-
     environment:
       POSTGRES_DB: docai
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-
     ports:
       - "5433:5432"
 
   backend:
+    build:
+      context: ./backend-java
+      dockerfile: Dockerfile   # <-- Matches your capital 'F' filename exactly
     image: document-analyzer-backend:1.0
     container_name: document-analyzer-backend
-
     ports:
       - "8080:8080"
-
     environment:
       SPRING_PROFILES_ACTIVE: docker
-
+      GROQ_API_KEY: ${GROQ_API_KEY}
     depends_on:
       - postgres
+
+  frontend:
+    build:
+      context: ./frontend-react
+      dockerfile: Dockerfile   # <-- Matches your frontend Dockerfile filename
+    image: document-analyzer-frontend:1.0
+    container_name: document-analyzer-frontend
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend

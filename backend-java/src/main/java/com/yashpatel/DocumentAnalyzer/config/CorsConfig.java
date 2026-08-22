@@ -18,6 +18,7 @@ public class CorsConfig {
 
                 registry.addMapping("/api/**")
                         .allowedOrigins("http://localhost:8081",
+                                "http://localhost:5173",
                                 "https://document-analyzer-frontend.jollytree-1bdfd601.southindia.azurecontainerapps.io")
                         .allowedMethods("*")
                         .allowedHeaders("*");

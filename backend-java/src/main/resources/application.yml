@@ -13,3 +13,6 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  groq:
+    api-key: ${GROQ_API_KEY}
+    model: ${GROQ_MODEL:openai/gpt-oss-120b}
