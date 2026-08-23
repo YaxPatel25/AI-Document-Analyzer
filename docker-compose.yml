@@ -12,21 +12,24 @@ services:
   backend:
     build:
       context: ./backend-java
-      dockerfile: Dockerfile   # <-- Matches your capital 'F' filename exactly
+      dockerfile: Dockerfile
     image: document-analyzer-backend:1.0
     container_name: document-analyzer-backend
     ports:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      GROQ_API_KEY: ${GROQ_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY:}
+      TZ: Asia/Kolkata
     depends_on:
       - postgres
 
   frontend:
     build:
       context: ./frontend-react
-      dockerfile: Dockerfile   # <-- Matches your frontend Dockerfile filename
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8080
     image: document-analyzer-frontend:1.0
     container_name: document-analyzer-frontend
     ports:

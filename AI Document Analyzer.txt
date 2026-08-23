@@ -35,6 +35,11 @@ docker network inspect document-analyzer-network
 docker exec -it docai-postgres psql -U postgres -d docai
 
 
+./mvnw clean package -DskipTests
+docker compose up --build -d
+
+
+
 
 -- For macOS
 
@@ -71,4 +76,9 @@ docker network inspect document-analyzer-network
 
 
 docker exec -it docai-postgres psql -U postgres -d docai
+
+
+./mvnw clean package -DskipTests
+docker compose up --build -d
+
 
