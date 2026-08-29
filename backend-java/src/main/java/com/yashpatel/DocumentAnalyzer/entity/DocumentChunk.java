@@ -30,4 +30,10 @@ public class DocumentChunk {
 
     @Column(nullable = false)
     private Integer characterCount;
+
+    @Column(name = "section_title")
+    private String sectionTitle;
+
+    @Column(name = "token_count", nullable = false)
+    private Integer tokenCount;
 }
