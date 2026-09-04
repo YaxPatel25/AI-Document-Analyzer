@@ -1,4 +1,4 @@
-# AI Document Analyzer - Project State
+    # AI Document Analyzer - Project State
 
 _Last updated: 2026-08-23_
 

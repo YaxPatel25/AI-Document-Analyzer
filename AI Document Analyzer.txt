@@ -36,6 +36,7 @@ docker exec -it docai-postgres psql -U postgres -d docai
 
 
 ./mvnw clean package -DskipTests
+.\mvnw.cmd clean package -DskipTests
 docker compose up --build -d
 
 

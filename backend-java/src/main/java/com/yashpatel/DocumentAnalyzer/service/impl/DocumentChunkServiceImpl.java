@@ -9,6 +9,7 @@ import com.yashpatel.DocumentAnalyzer.util.TextChunker;
 import com.yashpatel.DocumentAnalyzer.util.TextPreprocessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +25,7 @@ public class DocumentChunkServiceImpl
     private final TextChunker textChunker;
 
     @Override
+    @Transactional
     public List<DocumentChunk> createChunks(
             UUID documentId,
             String text) {
@@ -32,6 +34,9 @@ public class DocumentChunkServiceImpl
                 .findById(documentId)
                 .orElseThrow(() ->
                         new RuntimeException("Document not found"));
+
+        // Delete existing chunks before recreating them
+        documentChunkRepository.deleteByDocumentId(documentId);
 
         String cleanedText =
                 textPreprocessor.clean(text);

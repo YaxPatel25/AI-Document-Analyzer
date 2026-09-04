@@ -3,8 +3,6 @@ package com.yashpatel.DocumentAnalyzer.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "document_chunks")
 @Getter
@@ -15,25 +13,19 @@ import java.util.UUID;
 public class DocumentChunk {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "document_id", nullable = false)
     private Document document;
 
-    @Column(nullable = false)
+    @Column(name = "chunk_index", nullable = false)
     private Integer chunkIndex;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "character_count", nullable = false)
     private Integer characterCount;
-
-    @Column(name = "section_title")
-    private String sectionTitle;
-
-    @Column(name = "token_count", nullable = false)
-    private Integer tokenCount;
 }
